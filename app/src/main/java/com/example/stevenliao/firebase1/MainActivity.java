@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -18,8 +19,9 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button logBtn;
+    Button logBtn, verBtn, verificationEmail;
     FirebaseAuth auth;
+    FirebaseUser user;
     FirebaseAuth.AuthStateListener authStateListener;
     private String userUID;
 
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         logBtn = (Button) findViewById(R.id.button2);
+        verBtn = (Button) findViewById(R.id.button3);
 
         logBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
         authStateListener = new FirebaseAuth.AuthStateListener() {
 
             @Override
@@ -100,8 +104,30 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("onAuthStateChanged", "已登出");
                 }
 
+
+
             }
+
+
         };
+
+        verificationEmail = (Button) findViewById(R.id.button3);
+        verificationEmail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                user.sendEmailVerification()
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(MainActivity.this, "Email 驗證成功", Toast.LENGTH_SHORT).show();
+                                } else{
+                                    Toast.makeText(MainActivity.this, "Email 驗證:"+task.getException().toString(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+            }
+        });
     }
 
     @Override

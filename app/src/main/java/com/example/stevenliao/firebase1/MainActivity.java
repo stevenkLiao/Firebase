@@ -90,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
         authStateListener = new FirebaseAuth.AuthStateListener() {
 
             @Override
@@ -113,8 +112,11 @@ public class MainActivity extends AppCompatActivity {
 
         verificationEmail = (Button) findViewById(R.id.button3);
         verificationEmail.setOnClickListener(new View.OnClickListener() {
+
+
             @Override
             public void onClick(View v) {
+                final FirebaseUser user = auth.getCurrentUser();
                 user.sendEmailVerification()
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
@@ -123,6 +125,11 @@ public class MainActivity extends AppCompatActivity {
                                     Toast.makeText(MainActivity.this, "Email 驗證成功", Toast.LENGTH_SHORT).show();
                                 } else{
                                     Toast.makeText(MainActivity.this, "Email 驗證:"+task.getException().toString(), Toast.LENGTH_SHORT).show();
+                                }
+                                if(user.isEmailVerified()) {
+                                    Toast.makeText(MainActivity.this, "Email Success", Toast.LENGTH_SHORT).show();
+                                } else{
+                                    Toast.makeText(MainActivity.this, "Email Failed", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
